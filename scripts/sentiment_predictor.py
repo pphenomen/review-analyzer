@@ -6,18 +6,10 @@ from tensorflow.keras.preprocessing.sequence import pad_sequences
 class SentimentPredictor:
     def __init__(self, model_path, tokenizer_path, max_len=200):
         self.max_len = max_len
-
-        try:
-            self.model = load_model(model_path)
-        except Exception as e:
-            raise ValueError(f"Не удалось загрузить модель: {e}")
-
-        try:
-            with open(tokenizer_path, "r", encoding="utf-8") as f:
-                tokenizer_data = f.read()
-                self.tokenizer = tokenizer_from_json(tokenizer_data)
-        except Exception as e:
-            raise ValueError(f"Не удалось загрузить токенизатор: {e}")
+        self.model = load_model(model_path)
+        with open(tokenizer_path, "r", encoding="utf-8") as f:
+            tokenizer_data = f.read()
+            self.tokenizer = tokenizer_from_json(tokenizer_data)
 
     def preprocess_text(self, text):
         sequence = self.tokenizer.texts_to_sequences([text])

@@ -1,38 +1,17 @@
 import sys
-import pandas as pd
-import matplotlib.pyplot as plt
-from PyQt5.QtWidgets import (
-    QApplication, QMainWindow, QLabel, QPushButton, QVBoxLayout, QWidget, QFileDialog, QFrame, QMessageBox, QScrollArea, QStackedWidget, QHBoxLayout
-)
+from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QPushButton, QVBoxLayout, QWidget, QFileDialog, QFrame, QMessageBox, QScrollArea, QStackedWidget, QHBoxLayout
 from PyQt5.QtGui import QIcon, QPixmap
-from PyQt5.QtCore import Qt, pyqtSignal
-from predict_sentiment import SentimentPredictor
+from PyQt5.QtCore import Qt
 
-
-class DragDropFrame(QFrame):
-    fileDropped = pyqtSignal(str)
-
-    def __init__(self, parent=None):
-        super().__init__(parent)
-        self.setAcceptDrops(True)
-
-    def dragEnterEvent(self, event):
-        if event.mimeData().hasUrls():
-            event.acceptProposedAction()
-
-    def dropEvent(self, event):
-        for url in event.mimeData().urls():
-            file_path = url.toLocalFile()
-            if file_path.endswith('.xlsx'):
-                self.fileDropped.emit(file_path)
-
+from sentiment_predictor import SentimentPredictor
+from data_handler import DataHandler
+from plotter import Plotter
+from widgets import DragDropFrame
 
 class SentimentAnalyzerApp(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.reviews = []
-        self.sorted_reviews = []
-        self.sentiment_counts = {"positive": 0, "negative": 0}
+        self.data_handler = DataHandler()
 
         try:
             self.predictor = SentimentPredictor(
@@ -57,7 +36,6 @@ class SentimentAnalyzerApp(QMainWindow):
         self.background_label.lower()
 
         self.setFixedSize(self.size())
-        self.setAcceptDrops(True)
 
         self.stacked_widget = QStackedWidget(self)
         self.setCentralWidget(self.stacked_widget)
@@ -205,47 +183,19 @@ class SentimentAnalyzerApp(QMainWindow):
 
     def process_file(self, file_path):
         try:
-            df = pd.read_excel(file_path)
-            if "Описание" not in df.columns or "Звезды" not in df.columns:
-                QMessageBox.warning(self, "Ошибка", "Некорректный формат файла!")
-                return
-
-            df = df.dropna(subset=["Описание", "Звезды"])
-            self.reviews = []
-            self.sentiment_counts = {"positive": 0, "negative": 0}
-
-            for _, row in df.iterrows():
-                text = row["Описание"].strip()
-                stars = row["Звезды"]
-
-                sentiment = self.predictor.predict(text)
-
-                if "positive" in sentiment:
-                    sentiment = "Позитивный"
-                elif "negative" in sentiment:
-                    sentiment = "Негативный"
-
-                if sentiment == "Позитивный":
-                    self.sentiment_counts["positive"] += 1
-                elif sentiment == "Негативный":
-                    self.sentiment_counts["negative"] += 1
-
-                self.reviews.append((text, sentiment, stars))
-
-            if self.reviews:
-                self.sorted_reviews = self.reviews
-                self.review_count_label.setText(f"Количество отзывов: {len(self.reviews)}")
-                self.show_reviews()
-                self.stacked_widget.setCurrentWidget(self.reviews_page)
-
+            self.data_handler.load_data(file_path)
+            self.data_handler.analyze_data(self.predictor)
+            self.show_reviews()
+            self.stacked_widget.setCurrentWidget(self.reviews_page)
         except Exception as e:
             QMessageBox.critical(self, "Ошибка", f"Ошибка при обработке файла: {e}")
 
-
     def show_reviews(self):
-        layout = QVBoxLayout()
+        reviews = self.data_handler.get_reviews()
+        sentiment_counts = self.data_handler.get_sentiment_counts()
 
-        for review, sentiment, stars in self.sorted_reviews:
+        layout = QVBoxLayout()
+        for review, sentiment, stars in reviews:
             review_frame = QFrame(self)
             review_frame.setStyleSheet("""
                 background-color: #ffffff;
@@ -269,38 +219,17 @@ class SentimentAnalyzerApp(QMainWindow):
             layout.addWidget(review_frame)
 
         self.review_display.setLayout(layout)
-        self.review_count_label.setText(f"Количество отзывов: {len(self.reviews)}")
+        self.review_count_label.setText(f"Количество отзывов: {len(reviews)}")
 
     def plot_chart(self):
-        positive_reviews = self.sentiment_counts["positive"]
-        negative_reviews = self.sentiment_counts["negative"]
+        sentiment_counts = self.data_handler.get_sentiment_counts()
+        positive_reviews = sentiment_counts["positive"]
+        negative_reviews = sentiment_counts["negative"]
 
-        if positive_reviews == 0 and negative_reviews == 0:
-            QMessageBox.warning(self, "Ошибка", "Нет данных для построения диаграммы.")
-            return
-
-        labels = ['Положительные', 'Негативные']
-        sizes = [positive_reviews, negative_reviews]
-
-        fig, ax = plt.subplots(figsize=(10, 5))
-        ax.pie(sizes, autopct='%1.1f%%', startangle=90, colors=["#0080FF", "#B266FF"])
-        ax.axis('equal')
-        
-        fig.canvas.manager.set_window_title("Диаграмма")
-        
-        plt.title("Статистика", fontsize=20, weight='bold', color="black")
-        ax.legend(
-            labels=['Положительные', 'Негативные'],
-            loc="center right",
-            fontsize=10,
-            title="Тональность",
-            title_fontsize=12,
-            bbox_to_anchor=(1, 0.5),
-            edgecolor="#E0E0E0",
-            markerscale=1 
-        )
-        plt.tight_layout()
-        plt.show()
+        try:
+            Plotter.plot_sentiment_distribution(positive_reviews, negative_reviews)
+        except ValueError as e:
+            QMessageBox.warning(self, "Ошибка", str(e))
 
 
 if __name__ == "__main__":

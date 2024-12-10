@@ -28,7 +28,6 @@ class SentimentAnalyzerApp(QMainWindow):
         self.setWindowTitle("Revizer")
         self.setGeometry(100, 100, 1024, 768)
         self.setWindowIcon(QIcon("../images/icon.png"))
-        self.setStyleSheet("background-color: #E0E0E0;")
         self.setFixedSize(self.size())
 
         self.stacked_widget = QStackedWidget(self)
@@ -49,15 +48,16 @@ class SentimentAnalyzerApp(QMainWindow):
         logo_pixmap = QPixmap("../images/logo.png")
         logo_label.setPixmap(logo_pixmap.scaled(400, 400, Qt.KeepAspectRatio, Qt.SmoothTransformation)) 
         logo_label.setAlignment(Qt.AlignCenter)
+        logo_label.setStyleSheet("margin-top: 150px;")
         
         description_label = QLabel(self)
         description_label.setText("Добро пожаловать в REVIZER!\n"
-                          "Приложение предназначено для анализа и визуализации отзывов товаров с маркетплейса Wildberries.\n"
+                          "Приложение предназначено для анализа и визуализации отзывов товаров с Wildberries.\n"
                           "Загружайте отзывы, определяйте их тональность и создавайте наглядные диаграммы со статистикой!\n")
         description_label.setAlignment(Qt.AlignCenter)
-        description_label.setStyleSheet("font-weight: bold; font-size: 20px; color: #505050; text-align: center;")
+        description_label.setStyleSheet("font-weight: bold; font-size: 16px; color: #505050; text-align: center; margin-bottom: 100px;")
         description_label.setWordWrap(True)
-        description_label.setFixedWidth(630)
+        description_label.setFixedWidth(450)
 
         self.load_file_button = QPushButton("Выберите файл", self)
         self.load_file_button.setStyleSheet("""
@@ -100,7 +100,6 @@ class SentimentAnalyzerApp(QMainWindow):
         drag_area_layout.addWidget(self.load_file_button, alignment=Qt.AlignCenter)
 
         layout = QVBoxLayout()
-        layout.setSpacing(1) 
         layout.addWidget(logo_label, alignment=Qt.AlignCenter)
         layout.addWidget(description_label, alignment=Qt.AlignCenter)
         layout.addWidget(self.drag_area, alignment=Qt.AlignCenter)

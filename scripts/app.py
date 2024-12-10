@@ -25,16 +25,10 @@ class SentimentAnalyzerApp(QMainWindow):
         self.initUI()
 
     def initUI(self):
-        self.setWindowTitle("ReviewAnalyzer")
+        self.setWindowTitle("Revizer")
         self.setGeometry(100, 100, 1024, 768)
         self.setWindowIcon(QIcon("../images/icon.png"))
-
-        self.background_label = QLabel(self)
-        pixmap = QPixmap("../images/background.png")
-        self.background_label.setPixmap(pixmap.scaled(self.size(), Qt.KeepAspectRatioByExpanding, Qt.SmoothTransformation))
-        self.background_label.setGeometry(0, 0, self.width(), self.height())
-        self.background_label.lower()
-
+        self.setStyleSheet("background-color: #E0E0E0;")
         self.setFixedSize(self.size())
 
         self.stacked_widget = QStackedWidget(self)
@@ -51,9 +45,19 @@ class SentimentAnalyzerApp(QMainWindow):
     def create_start_page(self):
         page = QWidget()
 
-        title_label = QLabel("Анализ и классификация отзывов\nWildberries", self)
-        title_label.setStyleSheet("font-size: 40px; font-weight: bold; color: #E0E0E0;")
-        title_label.setAlignment(Qt.AlignCenter)
+        logo_label = QLabel(self)
+        logo_pixmap = QPixmap("../images/logo.png")
+        logo_label.setPixmap(logo_pixmap.scaled(400, 400, Qt.KeepAspectRatio, Qt.SmoothTransformation)) 
+        logo_label.setAlignment(Qt.AlignCenter)
+        
+        description_label = QLabel(self)
+        description_label.setText("Добро пожаловать в REVIZER!\n"
+                          "Приложение предназначено для анализа и визуализации отзывов товаров с маркетплейса Wildberries.\n"
+                          "Загружайте отзывы, определяйте их тональность и создавайте наглядные диаграммы со статистикой!\n")
+        description_label.setAlignment(Qt.AlignCenter)
+        description_label.setStyleSheet("font-weight: bold; font-size: 20px; color: #505050; text-align: center;")
+        description_label.setWordWrap(True)
+        description_label.setFixedWidth(630)
 
         self.load_file_button = QPushButton("Выберите файл", self)
         self.load_file_button.setStyleSheet("""
@@ -62,8 +66,8 @@ class SentimentAnalyzerApp(QMainWindow):
             background: qlineargradient(
                 spread: pad,
                 x1: 0, y1: 0, x2: 1, y2: 1,
-                stop: 0 #6200EE,  
-                stop: 1 #9C1A9E
+                stop: 0 #1c1c1c,
+                stop: 1 #3c3c3c
             );
             color: #ffffff;
             border: none;
@@ -76,7 +80,7 @@ class SentimentAnalyzerApp(QMainWindow):
         self.drag_area.setStyleSheet("""
             border: 2.5px dashed #333333;
             border-radius: 10px;
-            background-color: #dddddd;
+            background-color: #C0C0C0;
         """)
         self.drag_area.setFixedSize(600, 200)
         self.drag_area.fileDropped.connect(self.process_file)
@@ -93,11 +97,12 @@ class SentimentAnalyzerApp(QMainWindow):
         drag_text.setStyleSheet("font-size: 14px; font-weight: bold; color: #4A4A4A; border: none;")
         drag_text.setAlignment(Qt.AlignCenter)
         drag_area_layout.addWidget(drag_text)
-
         drag_area_layout.addWidget(self.load_file_button, alignment=Qt.AlignCenter)
 
         layout = QVBoxLayout()
-        layout.addWidget(title_label)
+        layout.setSpacing(1) 
+        layout.addWidget(logo_label, alignment=Qt.AlignCenter)
+        layout.addWidget(description_label, alignment=Qt.AlignCenter)
         layout.addWidget(self.drag_area, alignment=Qt.AlignCenter)
 
         page.setLayout(layout)
@@ -107,7 +112,7 @@ class SentimentAnalyzerApp(QMainWindow):
         page = QWidget()
 
         title_label = QLabel("Список отзывов", self)
-        title_label.setStyleSheet("font-size: 28px; font-weight: bold; color: #E0E0E0;")
+        title_label.setStyleSheet("font-size: 28px; font-weight: bold; color: #2F2F2F;")
         title_label.setAlignment(Qt.AlignCenter)
 
         self.chart_button = QPushButton("Построить диаграмму", self)
@@ -116,8 +121,8 @@ class SentimentAnalyzerApp(QMainWindow):
             background: qlineargradient(
                 spread: pad,
                 x1: 0, y1: 0, x2: 1, y2: 1,
-                stop: 0 #6200EE,  
-                stop: 1 #9C1A9E
+                stop: 0 #1c1c1c,
+                stop: 1 #3c3c3c
             );
             color: #ffffff;
             border: none; border-radius: 5px;
@@ -130,11 +135,12 @@ class SentimentAnalyzerApp(QMainWindow):
             background: qlineargradient(
                 spread: pad,
                 x1: 0, y1: 0, x2: 1, y2: 1,
-                stop: 0 #6200EE,  
-                stop: 1 #9C1A9E
+                stop: 0 #1c1c1c,
+                stop: 1 #3c3c3c
             );
             color: #ffffff;
-            border: none; border-radius: 5px;
+            border: none;
+            border-radius: 5px;
         """)
         back_button.clicked.connect(self.go_to_start_page)
 
@@ -230,7 +236,6 @@ class SentimentAnalyzerApp(QMainWindow):
             Plotter.plot_sentiment_distribution(positive_reviews, negative_reviews)
         except ValueError as e:
             QMessageBox.warning(self, "Ошибка", str(e))
-
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

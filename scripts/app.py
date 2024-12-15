@@ -144,7 +144,7 @@ class SentimentAnalyzerApp(QMainWindow):
         back_button.clicked.connect(self.go_to_start_page)
 
         self.review_count_label = QLabel(self)
-        self.review_count_label.setStyleSheet("font-size: 18px; font-weight: bold; color: #E0E0E0;")
+        self.review_count_label.setStyleSheet("font-size: 18px; font-weight: bold; color: #2F2F2F;;")
         self.review_count_label.setAlignment(Qt.AlignLeft)
 
         footer_layout = QHBoxLayout()

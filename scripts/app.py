@@ -52,7 +52,7 @@ class SentimentAnalyzerApp(QMainWindow):
         
         description_label = QLabel(self)
         description_label.setText("Добро пожаловать в REVIZER!\n"
-                          "Приложение предназначено для анализа и визуализации отзывов товаров с Wildberries.\n"
+                          "Приложение предназначено для анализа и визуализации отзывов товаров с маркетплейсов.\n"
                           "Загружайте отзывы, определяйте их тональность и создавайте наглядные диаграммы со статистикой!\n")
         description_label.setAlignment(Qt.AlignCenter)
         description_label.setStyleSheet("font-weight: bold; font-size: 16px; color: #505050; text-align: center; margin-bottom: 100px;")

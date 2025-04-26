@@ -1,4 +1,5 @@
 from PyQt5.QtWidgets import QMainWindow, QStackedWidget
+from PyQt5.QtGui import QIcon
 from views.start_page import StartPage
 from views.reviews_page import ReviewsPage
 
@@ -8,6 +9,7 @@ class MainWindow(QMainWindow):
         self.controller = controller
         self.setWindowTitle("Revizer")
         self.setGeometry(100, 100, 1024, 768)
+        self.setWindowIcon(QIcon("images/icon.png"))
 
         self.stacked_widget = QStackedWidget()
         self.setCentralWidget(self.stacked_widget)

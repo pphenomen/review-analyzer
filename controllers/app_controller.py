@@ -2,6 +2,7 @@ from models.sentiment_predictor import SentimentPredictor
 from utils.data_handler import DataHandler
 from utils.plotter import Plotter
 from views.main_window import MainWindow
+from PyQt5.QtWidgets import QMessageBox
 
 class AppController:
     def __init__(self):
@@ -27,7 +28,19 @@ class AppController:
         )
 
     def go_to_start_page(self):
-        self.main_window.show_start_page()
+        msg_box = QMessageBox(self.main_window)
+        msg_box.setIcon(QMessageBox.Warning)
+        msg_box.setWindowTitle("Предупреждение")
+        msg_box.setText("Вы уверены, что хотите вернуться? Все несохранённые данные будут потеряны.")
+        msg_box.setIcon(QMessageBox.Warning)
+
+        yes_button = msg_box.addButton("Да", QMessageBox.AcceptRole)
+        no_button = msg_box.addButton("Нет", QMessageBox.RejectRole)
+
+        msg_box.exec_()
+
+        if msg_box.clickedButton() == yes_button:
+            self.main_window.show_start_page()
     
     def run(self):
         self.main_window.show()

@@ -1,7 +1,7 @@
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QPushButton, QFileDialog
 from PyQt5.QtGui import QPixmap, QFont
 from PyQt5.QtCore import Qt
-from views.widgets import DragDropFrame
+from views.helpers.drag_drop_frame import DragDropFrame
 import os
 
 class StartPage(QWidget):

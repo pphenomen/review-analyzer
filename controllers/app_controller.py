@@ -58,7 +58,7 @@ class AppController:
             
         filtered_reviews = base.filter()
 
-        if len(filtered_reviews) == 1 and filtered_reviews[0][0] == "Совпадений не найдено":
+        if not filtered_reviews or len(filtered_reviews) == 1 and filtered_reviews[0][0] == "Совпадений не найдено":
             self.show_no_results_message()
             return []
         

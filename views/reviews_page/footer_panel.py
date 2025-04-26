@@ -1,6 +1,7 @@
 from PyQt5.QtWidgets import QWidget, QHBoxLayout, QPushButton, QLabel
 from PyQt5.QtCore import Qt
-from views.helpers.styles import LabelStyles, ButtonStyles
+from views.helpers.styles import LabelStyles
+from views.helpers.buttons_factory import create_button
 
 class FooterPanel(QWidget):
     def __init__(self, controller):
@@ -13,8 +14,8 @@ class FooterPanel(QWidget):
         self.review_count_label = QLabel("Количество отзывов: 0")
         self.review_count_label.setStyleSheet(LabelStyles.review_text())
 
-        plot_button = self.create_plot_button()
-        back_button = self.create_back_button()
+        plot_button = create_button("Построить диаграмму", self.controller.plot_reviews_chart)
+        back_button = create_button("Назад", self.controller.go_to_start_page)
 
         footer.addWidget(self.review_count_label, alignment=Qt.AlignLeft)
         footer.addStretch()
@@ -22,18 +23,6 @@ class FooterPanel(QWidget):
         footer.addWidget(back_button, alignment=Qt.AlignRight)
 
         return footer
-
-    def create_plot_button(self) -> QPushButton:
-        button = QPushButton("Построить диаграмму")
-        button.clicked.connect(self.controller.plot_reviews_chart)
-        button.setStyleSheet(ButtonStyles.default())
-        return button
-
-    def create_back_button(self) -> QPushButton:
-        button = QPushButton("Назад")
-        button.clicked.connect(self.controller.go_to_start_page)
-        button.setStyleSheet(ButtonStyles.default())
-        return button
 
     def update_review_count(self, count: int):
         self.review_count_label.setText(f"Количество отзывов: {count}")

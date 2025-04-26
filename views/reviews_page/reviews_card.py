@@ -12,10 +12,10 @@ class ReviewsCard(QWidget):
         layout = QVBoxLayout()
         review_text = QLabel(f"<b>Отзыв:</b> {text}")
         review_text.setWordWrap(True)
-        review_text.setStyleSheet(LabelStyles.description())
+        review_text.setStyleSheet(LabelStyles.review_text())
 
         sentiment_label = QLabel(f"<b>Тональность:</b> {sentiment}")
-        sentiment_label.setStyleSheet(LabelStyles.description())
+        sentiment_label.setStyleSheet(LabelStyles.review_text())
 
         stars_label = QLabel("⭐" * stars)
         stars_label.setStyleSheet(LabelStyles.star())

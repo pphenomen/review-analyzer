@@ -82,6 +82,7 @@ class LabelStyles:
         return """
             color: #505050;
             text-align: center;
+            margin-bottom: 100px;
         """
     
     @staticmethod

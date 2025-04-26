@@ -67,7 +67,7 @@ class StartPage(QWidget):
 
         cloud_icon = QLabel(self)
         cloud_pixmap = QPixmap("images/move-file.png")
-        cloud_icon.setPixmap(cloud_pixmap.scaled(40, 40, Qt.KeepAspectRatio))
+        cloud_icon.setPixmap(cloud_pixmap.scaled(48, 48, Qt.KeepAspectRatio))
         cloud_icon.setStyleSheet("border: none;")
         cloud_icon.setAlignment(Qt.AlignCenter)
         drag_layout.addWidget(cloud_icon)

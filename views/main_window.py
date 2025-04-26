@@ -1,7 +1,7 @@
 from PyQt5.QtWidgets import QMainWindow, QStackedWidget
 from PyQt5.QtGui import QIcon
 from views.start_page import StartPage
-from views.reviews_page import ReviewsPage
+from views.reviews_page.reviews_page import ReviewsPage
 
 class MainWindow(QMainWindow):
     def __init__(self, controller):

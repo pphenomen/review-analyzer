@@ -2,6 +2,7 @@ from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QPushButton, QFileDial
 from PyQt5.QtGui import QPixmap, QFont
 from PyQt5.QtCore import Qt
 from views.helpers.drag_drop_frame import DragDropFrame
+from views.helpers.styles import LabelStyles, DragDropStyles, ButtonStyles
 import os
 
 class StartPage(QWidget):
@@ -45,20 +46,12 @@ class StartPage(QWidget):
         label.setAlignment(Qt.AlignCenter)
         label.setWordWrap(True)
         label.setFixedWidth(450)
-        label.setStyleSheet("""                 
-            color: #505050;
-            text-align: center;
-            margin-bottom: 100px;
-        """)
+        label.setStyleSheet(LabelStyles.description())
         return label
 
     def build_drag_area(self):
         self.drag_area = DragDropFrame(self)
-        self.drag_area.setStyleSheet("""
-            border: 2.5px dashed #333333;
-            border-radius: 10px;
-            background-color: #C0C0C0;
-        """)
+        self.drag_area.setStyleSheet(DragDropStyles.drag_area())
         self.drag_area.setFixedSize(600, 200)
         self.drag_area.fileDropped.connect(self.process_file)
 
@@ -73,34 +66,13 @@ class StartPage(QWidget):
         drag_layout.addWidget(cloud_icon)
 
         drag_text = QLabel("Переместите файл сюда или", self)
-        drag_text.setStyleSheet("""
-            font-size: 16px; 
-            color: #4A4A4A; 
-            border: none;
-        """)
+        drag_text.setStyleSheet(DragDropStyles.drag_text())
         drag_text.setAlignment(Qt.AlignCenter)
         drag_layout.addWidget(drag_text)
 
         self.load_file_button = QPushButton("Выберите файл", self)
         self.load_file_button.setFixedSize(180, 45)
-        self.load_file_button.setStyleSheet("""
-            QPushButton {
-                font-size: 16px;
-                padding: 10px;
-                background: qlineargradient(
-                    spread: pad,
-                    x1: 0, y1: 0, x2: 1, y2: 1,
-                    stop: 0 #1c1c1c,
-                    stop: 1 #3c3c3c
-                );
-                color: #ffffff;
-                border: none;
-                border-radius: 20px;
-            }
-            QPushButton:hover {
-                background: #2d2d2d;
-            }
-        """)
+        self.load_file_button.setStyleSheet(ButtonStyles.rounded())
         self.load_file_button.clicked.connect(self.load_file)
         drag_layout.addWidget(self.load_file_button, alignment=Qt.AlignCenter)
 

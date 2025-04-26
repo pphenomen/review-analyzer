@@ -1,5 +1,6 @@
 from PyQt5.QtWidgets import QWidget, QHBoxLayout, QLineEdit, QComboBox, QPushButton, QGroupBox
 from PyQt5.QtCore import Qt
+from views.helpers.styles import ButtonStyles, LabelStyles, GroupBoxStyles
 
 class FiltersPanel(QWidget):
     def __init__(self, on_filter_apply):
@@ -8,7 +9,7 @@ class FiltersPanel(QWidget):
 
     def build(self) -> QGroupBox:
         group_box = QGroupBox("Фильтрация")
-        group_box.group_box_style()
+        group_box.setStyleSheet(GroupBoxStyles.default())
 
         filter_layout = QHBoxLayout()
         self.search_input = self.create_search_input()
@@ -37,7 +38,7 @@ class FiltersPanel(QWidget):
         search_input = QLineEdit()
         search_input.setPlaceholderText("Поиск по тексту...")
         search_input.setFixedWidth(250)
-        search_input.setStyleSheet("font-size: 14px; padding: 8px;")
+        search_input.setStyleSheet(LabelStyles.filter_text())
         search_input.textChanged.connect(self.on_filter_apply)
         return search_input
 
@@ -45,14 +46,14 @@ class FiltersPanel(QWidget):
         button = QPushButton("Найти")
         button.setFixedSize(80, 35)
         button.clicked.connect(self.on_filter_apply)
-        button.setStyleSheet(self.button_style())
+        button.setStyleSheet(ButtonStyles.default())
         return button
 
     def create_stars_combo(self) -> QComboBox:
         combo = QComboBox()
         combo.addItems(["Все оценки", "5 звезд", "4 звезды", "3 звезды", "2 звезды", "1 звезда"])
         combo.setFixedWidth(150)
-        combo.setStyleSheet("font-size: 14px; padding: 5px;")
+        combo.setStyleSheet(LabelStyles.filter_text())
         combo.currentIndexChanged.connect(self.on_filter_apply)
         return combo
 
@@ -60,7 +61,7 @@ class FiltersPanel(QWidget):
         combo = QComboBox()
         combo.addItems(["По умолчанию", "Сначала лучшие", "Сначала худшие"])
         combo.setFixedWidth(200)
-        combo.setStyleSheet("font-size: 14px; padding: 5px;")
+        combo.setStyleSheet(LabelStyles.filter_text())
         combo.currentIndexChanged.connect(self.on_filter_apply)
         return combo
 
@@ -68,6 +69,6 @@ class FiltersPanel(QWidget):
         combo = QComboBox()
         combo.addItems(["Все", "Позитивный", "Негативный"])
         combo.setFixedWidth(200)
-        combo.setStyleSheet("font-size: 14px; padding: 5px;")
+        combo.setStyleSheet(LabelStyles.filter_text())
         combo.currentIndexChanged.connect(self.on_filter_apply)
         return combo

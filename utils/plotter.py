@@ -15,8 +15,10 @@ class Plotter:
         labels = list(filtered.keys())
         sizes = list(filtered.values())
 
+        colors = ['#66b3b7', '#d3d3d3', '#ff6f61']
+        
         fig, ax = plt.subplots(figsize=(10, 5))
-        ax.pie(sizes, autopct='%1.1f%%', startangle=90)
+        ax.pie(sizes, autopct='%1.1f%%', startangle=90, colors=colors)
         ax.axis('equal')
         fig.canvas.manager.set_window_title("Диаграмма")
         plt.title("Распределение тональностей отзывов", fontsize=20, weight='bold')
@@ -49,7 +51,9 @@ class Plotter:
         ax.set_title("Распределение оценок", fontsize=16, weight='bold')
         ax.set_xticks(stars_sorted)
         ax.grid(axis='y', linestyle='--', alpha=0.7)
-
+        
+        fig.canvas.manager.set_window_title("Гистограмма распределения оценок")
+        
         # подписи над столбцами
         for bar in bars:
             height = bar.get_height()

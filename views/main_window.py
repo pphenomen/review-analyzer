@@ -15,7 +15,7 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(self.stacked_widget)
 
         self.start_page = StartPage(controller)
-        self.reviews_page = ReviewsPage(controller)
+        self.reviews_page = ReviewsPage(controller, self.on_model_changed)
 
         self.stacked_widget.addWidget(self.start_page)
         self.stacked_widget.addWidget(self.reviews_page)
@@ -31,3 +31,7 @@ class MainWindow(QMainWindow):
     def show_reviews(self, reviews):
         self.reviews_page.display_reviews(reviews)
         self.show_reviews_page()
+        
+    def on_model_changed(self, model_name):
+        self.controller.set_model_strategy(model_name)
+        self.reviews_page.update_model_description(model_name)

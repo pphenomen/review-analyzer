@@ -3,13 +3,16 @@ from PyQt5.QtCore import Qt
 from .filters_panel import FiltersPanel
 from .footer_panel import FooterPanel
 from .reviews_card import ReviewsCard
+from views.helpers.styles import LabelStyles
+from views.helpers.buttons_factory import create_combo
 
 class ReviewsPage(QWidget):
-    def __init__(self, controller):
+    def __init__(self, controller, on_model_select):
         super().__init__()
         self.controller = controller
+        self.on_model_select = on_model_select
         self.filters_panel = FiltersPanel(self.controller, self.apply_filters_clicked)
-        self.footer_panel = FooterPanel(self.controller)
+        self.footer_panel = FooterPanel(self.controller, self.apply_filters_clicked)
         self.card_builder = ReviewsCard()
         self.model_description_label = QLabel()
         self.all_reviews = []
@@ -20,12 +23,15 @@ class ReviewsPage(QWidget):
         layout.setAlignment(Qt.AlignTop)
         
         layout.addWidget(self.model_description_label)
-        self.model_selector = QComboBox()
-        self.model_selector.addItems(["RuBERT", "LSTM"])
+        
+        model_label = QLabel("Модель:")
+        model_label.setStyleSheet(LabelStyles.review_text())
+        
+        self.model_selector = create_combo(["RuBERT", "LSTM"], self.on_model_select)
         self.model_selector.currentTextChanged.connect(self.on_model_changed)
         
         model_select_layout = QHBoxLayout()
-        model_select_layout.addWidget(QLabel("Модель:"))
+        model_select_layout.addWidget(model_label)
         model_select_layout.addWidget(self.model_selector)
         layout.addLayout(model_select_layout)
         

@@ -3,7 +3,7 @@ class ButtonStyles:
     def default() -> str:
         return """
             QPushButton {
-                font-size: 14px;
+                font-size: 16px;
                 padding: 10px 20px;
                 background: qlineargradient(
                     spread:pad, x1:0, y1:0, x2:1, y2:1,
@@ -22,7 +22,7 @@ class ButtonStyles:
     def rounded() -> str:
         return """
             QPushButton {
-                font-size: 16px;
+                font-size: 18px;
                 padding: 10px;
                 background: qlineargradient(
                     spread:pad,
@@ -44,7 +44,7 @@ class GroupBoxStyles:
     def default() -> str:
         return """
             QGroupBox {
-                font-size: 16px;
+                font-size: 18px;
                 font-weight: bold;
                 border: 1px solid #cccccc;
                 border-radius: 8px;
@@ -71,11 +71,11 @@ class FrameStyles:
 class LabelStyles:
     @staticmethod
     def review_text() -> str:
-        return "font-size: 16px; color: #333333;"
+        return "font-size: 18px; color: #333333;"
 
     @staticmethod
     def star() -> str:
-        return "font-size: 18px; color: #FFD700;"
+        return "font-size: 20px; color: #FFD700;"
 
     @staticmethod
     def description() -> str:
@@ -87,7 +87,7 @@ class LabelStyles:
     
     @staticmethod
     def filter_text() -> str:
-        return "font-size: 14px; padding: 6px;"
+        return "font-size: 16px; padding: 6px;"
 
 class DragDropStyles:
     @staticmethod
@@ -101,7 +101,7 @@ class DragDropStyles:
     @staticmethod
     def drag_text() -> str:
         return """
-            font-size: 16px; 
+            font-size: 18px; 
             color: #4A4A4A; 
             border: none;
         """

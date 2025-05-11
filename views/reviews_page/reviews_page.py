@@ -80,6 +80,7 @@ class ReviewsPage(QWidget):
     
     def on_model_changed(self, model_name):
         self.controller.set_model_strategy(model_name)
+        self.filters_panel.reset_filters()
         self.update_model_description(model_name)
     
     def update_model_description(self, model_name: str):

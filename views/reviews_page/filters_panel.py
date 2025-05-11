@@ -29,6 +29,8 @@ class FiltersPanel(QWidget):
             self.on_filter_apply, width=200
         )
 
+        self.reset_button = create_button("Сбросить фильтры", self.reset_filters)
+        
         search_block = QHBoxLayout()
         search_block.addWidget(self.search_input)
         search_block.addWidget(self.search_button)
@@ -41,6 +43,7 @@ class FiltersPanel(QWidget):
         filter_layout.addWidget(self.stars_combo)
         filter_layout.addWidget(self.sort_combo)
         filter_layout.addWidget(self.sentiment_combo)
+        filter_layout.addWidget(self.reset_button)
 
         group_box.setLayout(filter_layout)
         return group_box
@@ -52,3 +55,9 @@ class FiltersPanel(QWidget):
         search_input.setStyleSheet(LabelStyles.filter_text())
         search_input.textChanged.connect(self.on_filter_apply)
         return search_input
+    
+    def reset_filters(self):
+        self.sentiment_combo.setCurrentIndex(0)
+        self.search_input.clear()
+        self.stars_combo.setCurrentIndex(0)
+        self.sort_combo.setCurrentIndex(0)

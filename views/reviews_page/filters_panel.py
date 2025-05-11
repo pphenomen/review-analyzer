@@ -3,8 +3,9 @@ from views.helpers.styles import ButtonStyles, LabelStyles, GroupBoxStyles
 from views.helpers.buttons_factory import create_button, create_combo
 
 class FiltersPanel(QWidget):
-    def __init__(self, on_filter_apply):
+    def __init__(self, controller, on_filter_apply):
         super().__init__()
+        self.controller = controller
         self.on_filter_apply = on_filter_apply
 
     def build(self) -> QGroupBox:
@@ -22,8 +23,9 @@ class FiltersPanel(QWidget):
             ["По умолчанию", "Сначала лучшие", "Сначала худшие"],
             self.on_filter_apply, width=200
         )
+        sentiments = self.controller.get_available_sentiments()
         self.sentiment_combo = create_combo(
-            ["Все", "Позитивный", "Негативный"],
+            ["Все"] + sentiments,
             self.on_filter_apply, width=200
         )
 

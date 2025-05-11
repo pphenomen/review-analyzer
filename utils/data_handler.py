@@ -30,6 +30,14 @@ class DataHandler:
             self.sentiment_counts[sentiment] += 1
             self.reviews.append((text, sentiment, stars))
 
+    def set_predicted_reviews(self, reviews):
+        self.reviews = []
+        self.sentiment_counts.clear()
+
+        for text, sentiment, stars in reviews:
+            self.reviews.append((text, sentiment, stars))
+            self.sentiment_counts[sentiment] += 1
+    
     def get_reviews(self):
         return self.reviews
 

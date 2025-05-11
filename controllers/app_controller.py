@@ -1,11 +1,14 @@
 from models.lstm.lstm_predictor import LSTMPredictor
 from models.transformer.transformer_predictor import TransformerPredictor
+from models.strategies.lstm_strategy import LSTMStrategy
+from models.strategies.transformer_strategy import TransformerStrategy
 from utils.data_handler import DataHandler
 from utils.plotter import Plotter
 from utils.filters.base_filter import ReviewFilter
 from utils.filters.sentiment_filter import SentimentFilter
 from utils.filters.keyword_filter import KeywordFilter
 from utils.filters.stars_filter import StarsFilter
+from utils.filters.best_worst_filter import BestWorstFilter
 from views.main_window import MainWindow
 from PyQt5.QtWidgets import QMessageBox
 
@@ -18,40 +21,39 @@ class AppController:
         self.transformer_predictor = TransformerPredictor(
             model_path="models/transformer/model"
         )
-        self.set_model_strategy("LSTM")
         self.data_handler = DataHandler()
         self.plotter = Plotter()
-
-        self.main_window = MainWindow(controller=self)
+        
         self.set_model_strategy("RuBERT")
-    
+        self.main_window = MainWindow(controller=self)
+           
     def set_model_strategy(self, model_name: str):
         strategy_map = {
             "LSTM": lambda: self._init_strategy("LSTM"),
             "RuBERT": lambda: self._init_strategy("RuBERT")
         }
-        strategy_map.get(model_name, lambda: None)()    
+        strategy_map.get(model_name, lambda: None)()
     
     def _init_strategy(self, model_name: str):
         if model_name == "LSTM":
-            from models.strategies.lstm_strategy import LSTMStrategy
             self.model_strategy = LSTMStrategy(self.lstm_predictor)
         elif model_name == "RuBERT":
-            from models.strategies.transformer_strategy import TransformerStrategy
             self.model_strategy = TransformerStrategy(self.transformer_predictor)
-
-            if hasattr(self.data_handler, "df"):
-                reviews = self.data_handler.get_all_reviews()
-                predicted = self.model_strategy.predict(reviews)
-                self.main_window.reviews_page.display_reviews(predicted)
-
+        
+        if self.data_handler.df is not None:
+            reviews = self.data_handler.get_all_reviews()
+            predicted = self.model_strategy.predict(reviews)
+            self.main_window.reviews_page.display_reviews(predicted)
+                
     def analyze(self, texts):
         return self.model_strategy.predict(texts)
     
     def load_reviews(self, file_path):
         self.data_handler.load_data(file_path)
-        self.data_handler.analyze_data(self.model_strategy)
-        self.main_window.show_reviews(self.data_handler.get_reviews())
+        reviews = self.data_handler.get_all_reviews()
+        predicted = self.model_strategy.predict(reviews)
+        self.data_handler.set_predicted_reviews(predicted)
+        self.main_window.show_reviews(predicted)
 
     def plot_reviews_chart(self):
         sentiment_counts = self.data_handler.get_sentiment_counts()
@@ -76,9 +78,10 @@ class AppController:
             
     def apply_filters(self, sentiment="Все", keyword="", stars=None, sort_order="Без сортировки", stars_filter="Все оценки"):
         base = ReviewFilter(self.data_handler.get_reviews())
-
+        
+        allowed = self.get_available_sentiments()
         if sentiment != "Все":
-            base = SentimentFilter(base, sentiment)
+            base = SentimentFilter(base, sentiment, allowed)
         if keyword.strip():
             base = KeywordFilter(base, keyword)
         if stars_filter != "Все оценки":
@@ -91,12 +94,23 @@ class AppController:
             self.show_no_results_message()
             return []
         
-        if sort_order == "Сначала лучшие":
-            filtered_reviews = sorted(filtered_reviews, key=lambda x: x[2], reverse=True)
-        elif sort_order == "Сначала худшие":
-            filtered_reviews = sorted(filtered_reviews, key=lambda x: x[2])
+        if sort_order == "По умолчанию":
+            return filtered_reviews
+    
+        best_worst_filter = BestWorstFilter(base, sort_order)
+        sorted_reviews = best_worst_filter.filter()
         
-        return filtered_reviews 
+        return sorted_reviews
+    
+    def get_available_sentiments(self):
+        if not hasattr(self, 'model_strategy') or self.model_strategy is None:
+            return []
+    
+        if isinstance(self.model_strategy, LSTMStrategy):
+            return ["Позитивный", "Негативный"]
+        elif isinstance(self.model_strategy, TransformerStrategy):
+            return ["Позитивный", "Нейтральный", "Негативный"]
+        return []
     
     def show_no_results_message(self):
         msg = QMessageBox(self.main_window)

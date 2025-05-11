@@ -8,7 +8,7 @@ class ReviewsPage(QWidget):
     def __init__(self, controller):
         super().__init__()
         self.controller = controller
-        self.filters_panel = FiltersPanel(self.apply_filters_clicked)
+        self.filters_panel = FiltersPanel(self.controller, self.apply_filters_clicked)
         self.footer_panel = FooterPanel(self.controller)
         self.card_builder = ReviewsCard()
         self.model_description_label = QLabel()
@@ -21,8 +21,8 @@ class ReviewsPage(QWidget):
         
         layout.addWidget(self.model_description_label)
         self.model_selector = QComboBox()
-        self.model_selector.addItems(["LSTM", "RuBERT"])
-        self.model_selector.currentTextChanged.connect(self.controller.set_model_strategy)
+        self.model_selector.addItems(["RuBERT", "LSTM"])
+        self.model_selector.currentTextChanged.connect(self.on_model_changed)
         
         model_select_layout = QHBoxLayout()
         model_select_layout.addWidget(QLabel("Модель:"))
@@ -49,16 +49,19 @@ class ReviewsPage(QWidget):
 
     def display_reviews(self, reviews: list):
         self.all_reviews = reviews
-
+        
+        # очищаем текущие отзывы
         for i in reversed(range(self.reviews_layout.count())):
             widget = self.reviews_layout.itemAt(i).widget()
             if widget:
                 widget.deleteLater()
 
+        # добавляем новые отзывы
         for text, sentiment, stars in reviews:
             review_frame = self.card_builder.build_review_card(text, sentiment, stars)
             self.reviews_layout.addWidget(review_frame)
 
+        # обновляем количество отзывов
         self.footer_panel.update_review_count(len(reviews))
 
     def apply_filters_clicked(self):
@@ -74,10 +77,26 @@ class ReviewsPage(QWidget):
             stars_filter=stars_filter
         )
         self.display_reviews(filtered_reviews)
-        
+    
+    def on_model_changed(self, model_name):
+        self.controller.set_model_strategy(model_name)
+        self.update_model_description(model_name)
+    
     def update_model_description(self, model_name: str):
         descriptions = {
-            "LSTM": "🔹 <b>LSTM</b>: простая модель, бинарная классификация (позитив / негатив), средняя точность.",
-            "RuBERT": "🔸 <b>RuBERT</b>: трансформер, трёхклассовая классификация (позитив / нейтрально / негатив), высокая точность."
+        "LSTMStrategy": "<b>LSTM</b>: простая модель, бинарная классификация (позитив / негатив), средняя точность.",
+        "TransformerStrategy": "<b>RuBERT</b>: трансформер, трёхклассовая классификация (позитив / нейтрально / негатив), высокая точность."
         }
         self.model_description_label.setText(descriptions.get(model_name, ""))
+        
+        sentiments = self.controller.get_available_sentiments()
+        self.filters_panel.sentiment_combo.clear()
+        self.filters_panel.sentiment_combo.addItem("Все")
+        self.filters_panel.sentiment_combo.addItems(sentiments)
+
+        # обновляем отзывы
+        if self.controller.data_handler.df is not None:
+            reviews = self.controller.data_handler.get_all_reviews()
+            predicted = self.controller.model_strategy.predict(reviews)
+            self.controller.data_handler.set_predicted_reviews(predicted)
+            self.display_reviews(predicted)

@@ -1,4 +1,5 @@
-from models.sentiment_predictor import SentimentPredictor
+from models.lstm.lstm_predictor import LSTMPredictor
+from models.transformer.transformer_predictor import TransformerPredictor
 from utils.data_handler import DataHandler
 from utils.plotter import Plotter
 from utils.filters.base_filter import ReviewFilter
@@ -10,18 +11,46 @@ from PyQt5.QtWidgets import QMessageBox
 
 class AppController:
     def __init__(self):
-        self.predictor = SentimentPredictor(
-            model_path="models/sentiment_model.h5",
-            tokenizer_path="models/tokenizer.json"
+        self.lstm_predictor = LSTMPredictor(
+            model_path="models/lstm/model/lstm_model.h5",
+            tokenizer_path="models/lstm/model/tokenizer.json"
         )
+        self.transformer_predictor = TransformerPredictor(
+            model_path="models/transformer/model"
+        )
+        self.set_model_strategy("LSTM")
         self.data_handler = DataHandler()
         self.plotter = Plotter()
 
         self.main_window = MainWindow(controller=self)
+        self.set_model_strategy("RuBERT")
+    
+    def set_model_strategy(self, model_name: str):
+        strategy_map = {
+            "LSTM": lambda: self._init_strategy("LSTM"),
+            "RuBERT": lambda: self._init_strategy("RuBERT")
+        }
+        strategy_map.get(model_name, lambda: None)()    
+    
+    def _init_strategy(self, model_name: str):
+        if model_name == "LSTM":
+            from models.strategies.lstm_strategy import LSTMStrategy
+            self.model_strategy = LSTMStrategy(self.lstm_predictor)
+        elif model_name == "RuBERT":
+            from models.strategies.transformer_strategy import TransformerStrategy
+            self.model_strategy = TransformerStrategy(self.transformer_predictor)
 
+            if hasattr(self.data_handler, "df"):
+                reviews = self.data_handler.get_all_reviews()
+                predicted = self.model_strategy.predict(reviews)
+                self.main_window.reviews_page.display_reviews(predicted)
+
+    def analyze(self, texts):
+        return self.model_strategy.predict(texts)
+    
     def load_reviews(self, file_path):
         self.data_handler.load_data(file_path)
-        self.data_handler.analyze_data(self.predictor)
+        self.data_handler.analyze_data(self.model_strategy)
         self.main_window.show_reviews(self.data_handler.get_reviews())
 
     def plot_reviews_chart(self):

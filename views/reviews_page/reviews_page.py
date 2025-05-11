@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QScrollArea
+from PyQt5.QtWidgets import QWidget, QVBoxLayout, QScrollArea, QComboBox, QHBoxLayout, QLabel
 from PyQt5.QtCore import Qt
 from .filters_panel import FiltersPanel
 from .footer_panel import FooterPanel
@@ -11,13 +11,24 @@ class ReviewsPage(QWidget):
         self.filters_panel = FiltersPanel(self.apply_filters_clicked)
         self.footer_panel = FooterPanel(self.controller)
         self.card_builder = ReviewsCard()
+        self.model_description_label = QLabel()
         self.all_reviews = []
         self.init_ui()
 
     def init_ui(self):
         layout = QVBoxLayout()
         layout.setAlignment(Qt.AlignTop)
-
+        
+        layout.addWidget(self.model_description_label)
+        self.model_selector = QComboBox()
+        self.model_selector.addItems(["LSTM", "RuBERT"])
+        self.model_selector.currentTextChanged.connect(self.controller.set_model_strategy)
+        
+        model_select_layout = QHBoxLayout()
+        model_select_layout.addWidget(QLabel("Модель:"))
+        model_select_layout.addWidget(self.model_selector)
+        layout.addLayout(model_select_layout)
+        
         layout.addWidget(self.filters_panel.build())
         layout.addWidget(self.build_review_area())
         layout.addLayout(self.footer_panel.build_footer())
@@ -63,3 +74,10 @@ class ReviewsPage(QWidget):
             stars_filter=stars_filter
         )
         self.display_reviews(filtered_reviews)
+        
+    def update_model_description(self, model_name: str):
+        descriptions = {
+            "LSTM": "🔹 <b>LSTM</b>: простая модель, бинарная классификация (позитив / негатив), средняя точность.",
+            "RuBERT": "🔸 <b>RuBERT</b>: трансформер, трёхклассовая классификация (позитив / нейтрально / негатив), высокая точность."
+        }
+        self.model_description_label.setText(descriptions.get(model_name, ""))

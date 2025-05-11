@@ -1,3 +1,3 @@
 __pycache__/
-lstm/model
-transformer/model
+models/lstm/model
+models/transformer/model

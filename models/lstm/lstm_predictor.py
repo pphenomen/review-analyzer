@@ -1,7 +1,7 @@
 import json
-from tensorflow.keras.models import load_model
-from tensorflow.keras.preprocessing.text import tokenizer_from_json
-from tensorflow.keras.preprocessing.sequence import pad_sequences
+from tensorflow.keras.models import load_model # type: ignore
+from tensorflow.keras.preprocessing.text import tokenizer_from_json # type: ignore
+from tensorflow.keras.preprocessing.sequence import pad_sequences # type: ignore
 
 class LSTMPredictor:
     def __init__(self, model_path, tokenizer_path, max_len=200):

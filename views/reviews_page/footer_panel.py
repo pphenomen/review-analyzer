@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QWidget, QHBoxLayout, QPushButton, QLabel
+from PyQt5.QtWidgets import QWidget, QHBoxLayout, QPushButton, QLabel, QComboBox
 from PyQt5.QtCore import Qt
 from views.helpers.styles import LabelStyles
 from views.helpers.buttons_factory import create_button
@@ -14,11 +14,18 @@ class FooterPanel(QWidget):
         self.review_count_label = QLabel("Количество отзывов: 0")
         self.review_count_label.setStyleSheet(LabelStyles.review_text())
 
-        plot_button = create_button("Построить диаграмму", self.controller.plot_reviews_chart)
+        self.chart_selector = QComboBox()
+        self.chart_selector.addItems([
+            "Круговая",
+            "Гистограмма"
+        ])
+        
+        plot_button = create_button("Построить диаграмму", self.handle_plot_chart)
         back_button = create_button("Назад", self.controller.go_to_start_page)
 
         footer.addWidget(self.review_count_label, alignment=Qt.AlignLeft)
         footer.addStretch()
+        footer.addWidget(self.chart_selector)
         footer.addWidget(plot_button, alignment=Qt.AlignRight)
         footer.addWidget(back_button, alignment=Qt.AlignRight)
 
@@ -26,3 +33,10 @@ class FooterPanel(QWidget):
 
     def update_review_count(self, count: int):
         self.review_count_label.setText(f"Количество отзывов: {count}")
+        
+    def handle_plot_chart(self):
+        selected = self.chart_selector.currentText()
+        if selected == "Круговая":
+            self.controller.plot_sentiment_pie_chart()
+        elif selected == "Гистограмма":
+            self.controller.plot_rating_histogram_chart()

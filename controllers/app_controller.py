@@ -55,12 +55,16 @@ class AppController:
         self.data_handler.set_predicted_reviews(predicted)
         self.main_window.show_reviews(predicted)
 
-    def plot_reviews_chart(self):
+    def plot_sentiment_pie_chart(self):
         sentiment_counts = self.data_handler.get_sentiment_counts()
-        self.plotter.plot_sentiment_distribution(
-            sentiment_counts["positive"], 
-            sentiment_counts["negative"]
-        )
+        self.plotter.pie_sentiment_plot(sentiment_counts)
+
+    def plot_rating_histogram_chart(self):
+        reviews = self.data_handler.get_reviews()
+        if not reviews:
+            self.show_no_results_message()
+            return
+        self.plotter.histogram_rating_plot(reviews)
 
     def go_to_start_page(self):
         msg_box = QMessageBox(self.main_window)

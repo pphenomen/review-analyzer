@@ -11,6 +11,10 @@ from utils.filters.stars_filter import StarsFilter
 from utils.filters.best_worst_filter import BestWorstFilter
 from views.main_window import MainWindow
 from PyQt5.QtWidgets import QMessageBox
+from PyQt5.QtCore import QThread
+from PyQt5.QtWidgets import QMessageBox
+from utils.loading_dialog import LoadingDialog
+from utils.review_loader import ReviewLoaderWorker
 
 class AppController:
     def __init__(self):
@@ -49,12 +53,36 @@ class AppController:
         return self.model_strategy.predict(texts)
     
     def load_reviews(self, file_path):
-        self.data_handler.load_data(file_path)
-        reviews = self.data_handler.get_all_reviews()
-        predicted = self.model_strategy.predict(reviews)
-        self.data_handler.set_predicted_reviews(predicted)
-        self.main_window.show_reviews(predicted)
+        self.loading_dialog = LoadingDialog("Загрузка отзывов...", parent=self.main_window)
+        self.loading_dialog.show()
 
+        self.thread = QThread()
+        self.worker = ReviewLoaderWorker(file_path, self.data_handler, self.model_strategy)
+        self.worker.moveToThread(self.thread)
+
+        self.thread.started.connect(self.worker.run)
+        self.worker.finished.connect(self.on_reviews_loaded)
+        self.worker.error.connect(self.on_reviews_load_error)
+
+        self.worker.finished.connect(self.thread.quit)
+        self.worker.finished.connect(self.worker.deleteLater)
+        self.thread.finished.connect(self.thread.deleteLater)
+
+        self.thread.start()
+
+    def on_reviews_loaded(self, predicted_reviews):
+        self.data_handler.set_predicted_reviews(predicted_reviews)
+        self.main_window.show_reviews(predicted_reviews)
+        self.loading_dialog.close()
+    
+    def on_reviews_load_error(self, error_msg):
+        self.loading_dialog.close()
+        error_box = QMessageBox(self.main_window)
+        error_box.setWindowTitle("Ошибка")
+        error_box.setText("Произошла ошибка при загрузке отзывов:\n\n" + error_msg)
+        error_box.setIcon(QMessageBox.Critical)
+        error_box.exec_()
+    
     def plot_sentiment_pie_chart(self):
         sentiment_counts = self.data_handler.get_sentiment_counts()
         self.plotter.pie_sentiment_plot(sentiment_counts)

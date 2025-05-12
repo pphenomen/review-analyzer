@@ -4,7 +4,7 @@ class ButtonStyles:
         return """
             QPushButton {
                 font-size: 16px;
-                padding: 10px 20px;
+                padding: 8px 20px;
                 background: qlineargradient(
                     spread:pad, x1:0, y1:0, x2:1, y2:1,
                     stop:0 #1c1c1c, stop:1 #3c3c3c
@@ -22,8 +22,8 @@ class ButtonStyles:
     def rounded() -> str:
         return """
             QPushButton {
-                font-size: 18px;
-                padding: 10px;
+                font-size: 16px;
+                padding: 10px 16px;
                 background: qlineargradient(
                     spread:pad,
                     x1:0, y1:0, x2:1, y2:1,
@@ -32,7 +32,7 @@ class ButtonStyles:
                 );
                 color: #ffffff;
                 border: none;
-                border-radius: 20px;
+                border-radius: 10px;
             }
             QPushButton:hover {
                 background: #2d2d2d;
@@ -44,7 +44,7 @@ class GroupBoxStyles:
     def default() -> str:
         return """
             QGroupBox {
-                font-size: 18px;
+                font-size: 16px;
                 font-weight: bold;
                 border: 1px solid #cccccc;
                 border-radius: 8px;
@@ -80,6 +80,7 @@ class LabelStyles:
     @staticmethod
     def description() -> str:
         return """
+            font-size: 18px;
             color: #505050;
             text-align: center;
             margin-bottom: 100px;
@@ -87,7 +88,16 @@ class LabelStyles:
     
     @staticmethod
     def filter_text() -> str:
-        return "font-size: 16px; padding: 6px;"
+        return "font-size: 16px; padding: 4px 8px;"
+    
+    @staticmethod
+    def page_title() -> str:
+        return """
+            font-size: 44px;
+            font-weight: 800;
+            color: #222222;
+            qproperty-alignment: 'AlignCenter';
+        """
 
 class DragDropStyles:
     @staticmethod
@@ -101,7 +111,7 @@ class DragDropStyles:
     @staticmethod
     def drag_text() -> str:
         return """
-            font-size: 18px; 
+            font-size: 16px; 
             color: #4A4A4A; 
             border: none;
         """

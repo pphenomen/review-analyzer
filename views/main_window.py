@@ -7,7 +7,7 @@ class MainWindow(QMainWindow):
     def __init__(self, controller):
         super().__init__()
         self.controller = controller
-        self.setWindowTitle("Revizer")
+        self.setWindowTitle("REVIZER")
         self.setGeometry(100, 100, 1024, 768)
         self.setWindowIcon(QIcon("images/icon.png"))
 

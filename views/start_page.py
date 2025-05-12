@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QPushButton, QFileDialog
+from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QPushButton, QFileDialog, QSizePolicy
 from PyQt5.QtGui import QPixmap, QFont
 from PyQt5.QtCore import Qt
 from views.helpers.drag_drop_frame import DragDropFrame
@@ -33,9 +33,9 @@ class StartPage(QWidget):
     def build_logo(self):
         label = QLabel(self)
         pixmap = QPixmap("images/logo.png")
-        label.setPixmap(pixmap.scaled(400, 400, Qt.KeepAspectRatio, Qt.SmoothTransformation))
+        label.setPixmap(pixmap.scaled(500, 500, Qt.KeepAspectRatio, Qt.SmoothTransformation))
         label.setAlignment(Qt.AlignCenter)
-        label.setStyleSheet("margin-top: 150px;")
+        label.setStyleSheet("margin-top: 125px;")
         return label
 
     def build_description(self):
@@ -52,7 +52,7 @@ class StartPage(QWidget):
     def build_drag_area(self):
         self.drag_area = DragDropFrame(self)
         self.drag_area.setStyleSheet(DragDropStyles.drag_area())
-        self.drag_area.setFixedSize(600, 200)
+        self.drag_area.setFixedSize(500, 200)
         self.drag_area.fileDropped.connect(self.process_file)
 
         drag_layout = QVBoxLayout(self.drag_area)
@@ -71,7 +71,6 @@ class StartPage(QWidget):
         drag_layout.addWidget(drag_text)
 
         self.load_file_button = QPushButton("Выберите файл", self)
-        self.load_file_button.setFixedSize(180, 45)
         self.load_file_button.setStyleSheet(ButtonStyles.rounded())
         self.load_file_button.clicked.connect(self.load_file)
         drag_layout.addWidget(self.load_file_button, alignment=Qt.AlignCenter)

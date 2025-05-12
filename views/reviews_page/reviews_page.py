@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QScrollArea, QLabel, QHBoxLayout
+from PyQt5.QtWidgets import QWidget, QVBoxLayout, QScrollArea, QLabel, QHBoxLayout, QComboBox
 from PyQt5.QtCore import Qt
 from .filters_panel import FiltersPanel
 from .footer_panel import FooterPanel
@@ -14,12 +14,8 @@ class ReviewsPage(QWidget):
         self.card_builder = ReviewsCard()
         self.page_title = QLabel("Отзывы")
         self.page_title.setStyleSheet(LabelStyles.page_title())
-        self.footer_panel = FooterPanel(
-            controller=self.controller,
-            on_combo_change=self.apply_filters_clicked,
-            on_model_updated=self.update_model_description,
-            reset_filters=self.filters_panel.reset_filters
-        )
+        self.footer_panel = FooterPanel(controller=self.controller, on_combo_change=self.apply_filters_clicked)
+        self.model_description_label = QLabel()
         self.all_reviews = []
         self.init_ui()
 
@@ -29,11 +25,19 @@ class ReviewsPage(QWidget):
         layout.setSpacing(15)
 
         title_layout = QHBoxLayout()
+        model_label = QLabel("Модель:")
+        model_label.setStyleSheet(LabelStyles.review_text())
+        self.model_selector = QComboBox()
+        self.model_selector.addItems(["RuBERT", "LSTM"])
+        self.model_selector.currentTextChanged.connect(self.on_model_changed)
+        
         self.page_title.setStyleSheet(LabelStyles.page_title())
         self.page_title.setAlignment(Qt.AlignCenter)
-
+        
         back_button = create_button("Назад", self.controller.go_to_start_page)
 
+        title_layout.addWidget(model_label)
+        title_layout.addWidget(self.model_selector)
         title_layout.addWidget(self.page_title, stretch=1)
         title_layout.addStretch()
         title_layout.addWidget(back_button)
@@ -57,6 +61,11 @@ class ReviewsPage(QWidget):
         self.review_area.setWidget(self.reviews_widget)
         return self.review_area
 
+    def on_model_changed(self, model_name):
+        self.controller.set_model_strategy(model_name)
+        self.filters_panel.reset_filters()
+        self.update_model_description(model_name)
+    
     def display_reviews(self, reviews: list):
         self.all_reviews = reviews
 

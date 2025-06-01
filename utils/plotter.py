@@ -15,7 +15,7 @@ class Plotter:
         labels = list(filtered.keys())
         sizes = list(filtered.values())
 
-        colors = ['#66b3b7', '#d3d3d3', '#ff6f61']
+        colors = ['#66b3b7', '#4dff00', '#ff6f61']
         
         fig, ax = plt.subplots(figsize=(10, 5))
         ax.pie(sizes, autopct='%1.1f%%', startangle=90, colors=colors)
